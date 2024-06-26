@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooking Partner</title>
+    <link rel="icon" href="/static/images/icon.png" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <style>
+        .recipe-title {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .cooking-step {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="button-container">
+        <button class = "first-button" id="goTextButton">문자 검색</button>
+        <button class = "back-button" id="goImageButton">이미지 검색</button>
+    </div>
+    <h1>
+        Cooking Partner
+        <img src="/static/images/icon.png" alt="Icon" style="vertical-align: middle; height: 48px; width: 48px;">
+    </h1>
+    <form id="chatForm" method="post">
+        <div class="input-container">
+            <input type="text" id="user_input" name="user_input" placeholder="음식명 검색은 0, 재료명 검색은 1을 입력해 주세요 :" required>
+            <input type="hidden" id="step" name="step" value="0">
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+    <div id="response"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userInput = document.getElementById('user_input');
+        userInput.placeholder = '음식명 검색은 0, 재료명 검색은 1을 입력해 주세요.';
+
+        document.getElementById('goTextButton').addEventListener('click', function() {
+            window.location.href = '/text';
+        });
+
+        document.getElementById('goImageButton').addEventListener('click', function() {
+            window.location.href = '/image';
+        });
+
+        document.getElementById('chatForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/text/chat', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('response').innerHTML = result.response;
+            history.pushState({ response: result.response, step: result.step }, '', window.location.pathname + '?step=' + result.step);
+
+            if (result.step) {
+                document.getElementById('step').value = result.step;
+                switch(result.step) {
+                    case '1':
+                        userInput.placeholder = '카테고리 이름을 입력하세요 .';
+                        break;
+                    case '2':
+                        userInput.placeholder = '요리목록의 이름을 입력하세요 .';
+                        break;
+                    case '3':
+                        userInput.placeholder = '재료를 입력해 주세요 (쉼표로 구분해 주세요) .';
+                        break;
+                    default:
+                        userInput.placeholder = '음식명 검색은 0, 재료명 검색은 1을 입력해 주세요 .';
+                }
+                userInput.value = '';
+            }
+        };
+
+        window.onpopstate = function(event) {
+            if (event.state && event.state.response) {
+                document.getElementById('response').innerHTML = event.state.response;
+                if (event.state.step) {
+                    document.getElementById('step').value = event.state.step;
+                    switch(event.state.step) {
+                        case '1':
+                            userInput.placeholder = '카테고리 이름을 입력하세요 .';
+                            break;
+                        case '2':
+                            userInput.placeholder = '요리목록의 이름을 입력하세요 .';
+                            break;
+                        case '3':
+                            userInput.placeholder = '재료를 입력해 주세요 (쉼표로 구분해 주세요) .';
+                            break;
+                        default:
+                            userInput.placeholder = '음식명 검색은 0, 재료명 검색은 1을 입력해 주세요 .';
+                    }
+                }
+            }
+        };
+    });
+</script>
+</body>
+</html>

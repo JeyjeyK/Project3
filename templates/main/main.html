@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .container {
+        margin-top: 20px;
+    }
+    .toggle-buttons {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .toggle-buttons button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+    }
+
+</style>
+
+
+<body>
+<div class="container">
+    <h1>
+        Cooking Partner
+        <img src="/static/images/icon.png" alt="Icon" style="vertical-align: middle; height: 24px; width: 24px;">
+
+    </h1>
+    <div class="toggle-buttons">
+        <button id="image_search-btn" onclick="location.href='/image'">이미지 검색</button>
+        <button id="text_search-btn" onclick="location.href='/text'" style=" background-color: #967BDC">문자 검색</button>
+    </div>
+</div>
+
+
+<script>
+
+</script>
+
+</body>
+{% endblock %}

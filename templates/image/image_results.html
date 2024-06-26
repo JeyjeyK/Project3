@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .container {
+        margin: 20px;
+    }
+    .toggle-buttons {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .toggle-buttons button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+    }
+    .toggle-buttons .active {
+        background-color: #007bff;
+        color: white;
+    }
+    .toggle-buttons button:not(.active) {
+        background-color: #f0f0f0;
+        color: #333;
+    }
+    .recipe-section {
+        display: none;
+    }
+    .recipe-section.active {
+        display: block;
+    }
+    .header {
+        text-align: center;
+        background-color: #343a40;
+        color: white;
+        padding: 20px;
+        border-radius: 5px;
+    }
+    .recipe-section ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .recipe-section ul li {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+    }
+    .error-message {
+        color: red;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+
+    .image-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .image-container img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+</style>
+
+
+<body>
+
+<div class="container" style="width: 350px">
+     <div class="card">
+        <div class="card-header">
+            <h1>
+                Cooking Partner
+                <img src="/static/images/icon.png" alt="Icon"
+                     style="vertical-align: middle; height: 48px; width: 48px;">
+            </h1>
+            <h3> 음식 사진 분류 결과</h3>
+        </div>
+
+    </div>
+
+
+    <div class="image-container" >
+        <h2 style="background-color: white;">음식 이름 : {{ food_name }}</h2>
+        <img src="data:image/jpeg;base64,{{ img_data }}" alt="Image Placeholder" class="img-fluid"
+             onclick="openImageInNewWindow('{{ img_data }}')">
+    </div>
+    <div>
+        <input type="button" class="first-button" value="문자 검색" onclick="location.href='/text'"/>
+        <input type="button" class="back-button" value="이미지 검색" onclick="location.href='/image'"/>
+    </div>
+
+
+</div>
+<div class="container">
+    {% if width and height %}
+    <div class="toggle-buttons">
+        <button id="recommended-btn" class="active btn btn-primary" onclick="toggleRecipe('recommended')">추천 조리법
+        </button>
+        <button id="easy-btn" class="btn btn-secondary" onclick="toggleRecipe('easy')">쉬운 조리법</button>
+    </div>
+
+    <div id="recommended" class="recipe-section active">
+<!--        <h3>추천 조리법</h3>-->
+        <h4>재료</h4>
+        <ul>
+            {% for ing in ingredient[1:] %}
+            <li>{{ ing.split(']')[0] }} : {{ ing.split(']')[1].replace('|', ', ') }}</li>
+            {% endfor %}
+        </ul>
+        <h4>조리순서</h4>
+        <ul>
+            {% for step_item in step[1:] %}
+            <li>{{ step_item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="easy" class="recipe-section">
+<!--        <h3>쉬운 조리법</h3>-->
+        <h4>재료</h4>
+        <ul>
+            {% for ing in ingredient_easy[1:] %}
+            <li>{{ ing.split(']')[0] }} : {{ ing.split(']')[1].replace('|', ', ') }}</li>
+            {% endfor %}
+        </ul>
+        <h4>조리순서</h4>
+        <ul>
+            {% for step_item in step_easy[1:] %}
+            <li>{{ step_item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+</div>
+</body>
+<script>
+    function toggleRecipe(type) {
+        document.getElementById('recommended').classList.remove('active');
+        document.getElementById('easy').classList.remove('active');
+        document.getElementById(type).classList.add('active');
+
+        document.getElementById('recommended-btn').classList.remove('active');
+        document.getElementById('easy-btn').classList.remove('active');
+        document.getElementById(type + '-btn').classList.add('active');
+    }
+
+    function openImageInNewWindow(imgData) {
+        var newWindow = window.open();
+        newWindow.document.write('<img src="data:image/jpeg;base64,' + imgData + '" style="width:100%">');
+    }
+</script>
+
+{% endblock %}
